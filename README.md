@@ -1,5 +1,5 @@
 # SKN Atlas competition
-The goal of this competition was to train analyzing and building predicitive models on synthetic data which simulates credit risk assesments.
+The goal of this competition was to practice analyzing and building predicitive models on synthetic data which simulates credit risk assesments.
 The initial analysis was done using r in Rstudio. Then, a linear regression model was built using python inside Rstudio, and a classification model was built in in Jupyterlab, using data exported from Rstudio.
 
 ### Files overview
