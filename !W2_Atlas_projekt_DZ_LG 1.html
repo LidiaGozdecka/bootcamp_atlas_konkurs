@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Dominika Zydorczyk, Lidia Gozdecka">
+
+<title>Projekt konkursowy z bootcampu</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="!W2_Atlas_projekt_DZ_LG 1_files/libs/clipboard/clipboard.min.js"></script>
+<script src="!W2_Atlas_projekt_DZ_LG 1_files/libs/quarto-html/quarto.js"></script>
+<script src="!W2_Atlas_projekt_DZ_LG 1_files/libs/quarto-html/popper.min.js"></script>
+<script src="!W2_Atlas_projekt_DZ_LG 1_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="!W2_Atlas_projekt_DZ_LG 1_files/libs/quarto-html/anchor.min.js"></script>
+<link href="!W2_Atlas_projekt_DZ_LG 1_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="!W2_Atlas_projekt_DZ_LG 1_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="!W2_Atlas_projekt_DZ_LG 1_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="!W2_Atlas_projekt_DZ_LG 1_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="!W2_Atlas_projekt_DZ_LG 1_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+<script src="!W2_Atlas_projekt_DZ_LG 1_files/libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="!W2_Atlas_projekt_DZ_LG 1_files/libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
+<script src="!W2_Atlas_projekt_DZ_LG 1_files/libs/datatables-binding-0.33/datatables.js"></script>
+<script src="!W2_Atlas_projekt_DZ_LG 1_files/libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<link href="!W2_Atlas_projekt_DZ_LG 1_files/libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+<link href="!W2_Atlas_projekt_DZ_LG 1_files/libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet">
+<script src="!W2_Atlas_projekt_DZ_LG 1_files/libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="!W2_Atlas_projekt_DZ_LG 1_files/libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
+<script src="!W2_Atlas_projekt_DZ_LG 1_files/libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul class="collapse">
+  <li><a href="#zbiór-danych" id="toc-zbiór-danych" class="nav-link active" data-scroll-target="#zbiór-danych"><span class="header-section-number">1</span> Zbiór danych</a>
+  <ul class="collapse">
+  <li><a href="#analiza-zbioru-danych" id="toc-analiza-zbioru-danych" class="nav-link" data-scroll-target="#analiza-zbioru-danych"><span class="header-section-number">1.1</span> Analiza zbioru danych</a></li>
+  <li><a href="#czyszczenie-danych" id="toc-czyszczenie-danych" class="nav-link" data-scroll-target="#czyszczenie-danych"><span class="header-section-number">1.2</span> Czyszczenie danych</a></li>
+  <li><a href="#podstawowe-statystyki" id="toc-podstawowe-statystyki" class="nav-link" data-scroll-target="#podstawowe-statystyki"><span class="header-section-number">1.3</span> Podstawowe statystyki</a></li>
+  </ul></li>
+  <li><a href="#wizualizacje" id="toc-wizualizacje" class="nav-link" data-scroll-target="#wizualizacje"><span class="header-section-number">2</span> Wizualizacje</a>
+  <ul class="collapse">
+  <li><a href="#ridge-plot" id="toc-ridge-plot" class="nav-link" data-scroll-target="#ridge-plot"><span class="header-section-number">2.1</span> Ridge plot</a></li>
+  <li><a href="#boxplot" id="toc-boxplot" class="nav-link" data-scroll-target="#boxplot"><span class="header-section-number">2.2</span> Boxplot</a></li>
+  <li><a href="#wnioski" id="toc-wnioski" class="nav-link" data-scroll-target="#wnioski"><span class="header-section-number">2.3</span> Wnioski</a></li>
+  </ul></li>
+  <li><a href="#modele" id="toc-modele" class="nav-link" data-scroll-target="#modele"><span class="header-section-number">3</span> Modele</a>
+  <ul class="collapse">
+  <li><a href="#regresja-liniowa" id="toc-regresja-liniowa" class="nav-link" data-scroll-target="#regresja-liniowa"><span class="header-section-number">3.1</span> Regresja liniowa</a></li>
+  <li><a href="#klasyfikacja-binarna" id="toc-klasyfikacja-binarna" class="nav-link" data-scroll-target="#klasyfikacja-binarna"><span class="header-section-number">3.2</span> Klasyfikacja binarna</a></li>
+  </ul></li>
+  <li><a href="#podsumowanie" id="toc-podsumowanie" class="nav-link" data-scroll-target="#podsumowanie"><span class="header-section-number">4</span> Podsumowanie</a>
+  <ul class="collapse">
+  <li><a href="#bibliografia" id="toc-bibliografia" class="nav-link" data-scroll-target="#bibliografia"><span class="header-section-number">4.1</span> Bibliografia</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Projekt konkursowy z bootcampu</h1>
+<p class="subtitle lead">Symulacja analizy ryzyka kredytowego</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Dominika Zydorczyk, Lidia Gozdecka </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="zbiór-danych" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Zbiór danych</h1>
+<p>Analizowany zbiór danych jest zbiorem synetycznych danych symulujących ocenę ryzyka kredytowego. Tak się prezentują:</p>
+<div class="cell">
+<div class="cell-output-display">
+
+<div class="datatables html-widget html-fill-item" id="htmlwidget-e32d105d939a6dc93b6e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-e32d105d939a6dc93b6e">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6"],[0,1,2,3,4,5],[44,38,46,55,37,37],["15689 złoty","18906 złoty","16338 złoty","23276 złoty","40000 złoty",""],["brak","4 dzieci","2 dzieci","3 dzieci","1 dzieci","brak"],["dobra historia","brak historii","","dobra historia","brak historii","dobra historia"],["brak opóźnień","brak opóźnień","","opóźnienia","","opóźnienia"],[2,0,2,2,1,1],[9,1,4,10,9,11],["samozatrudnienie","stała","brak","stała","określona","określona"],["","tak","tak","tak","nie","tak"],["","62965 złoty","124967 złoty","52147 złoty","33957 złoty","85621 złoty"],[1,0,0,1,1,0],["wyższe","średnie","podstawowe","średnie","wyższe","wyższe"],["małe","średnie","duże","małe","małe","duże"],["żonaty/zamężna","kawaler/panna","żonaty/zamężna","kawaler/panna","kawaler/panna","kawaler/panna"],[0.1781307183164518,0.3704799526452771,0.7123342931374561,0.6650496640103427,0.607150978647289,0.1659691144871057],[0,0,0,0,0,0]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>V1<\/th>\n      <th>age<\/th>\n      <th>income<\/th>\n      <th>children<\/th>\n      <th>credit_history<\/th>\n      <th>overdue_payments<\/th>\n      <th>active_loans<\/th>\n      <th>years_in_job<\/th>\n      <th>employment_type<\/th>\n      <th>owns_property<\/th>\n      <th>assets_value<\/th>\n      <th>other_loans<\/th>\n      <th>education<\/th>\n      <th>city<\/th>\n      <th>marital_status<\/th>\n      <th>support_indicator<\/th>\n      <th>credit_risk<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2,7,8,12,16,17]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"V1","targets":1},{"name":"age","targets":2},{"name":"income","targets":3},{"name":"children","targets":4},{"name":"credit_history","targets":5},{"name":"overdue_payments","targets":6},{"name":"active_loans","targets":7},{"name":"years_in_job","targets":8},{"name":"employment_type","targets":9},{"name":"owns_property","targets":10},{"name":"assets_value","targets":11},{"name":"other_loans","targets":12},{"name":"education","targets":13},{"name":"city","targets":14},{"name":"marital_status","targets":15},{"name":"support_indicator","targets":16},{"name":"credit_risk","targets":17}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<section id="analiza-zbioru-danych" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="analiza-zbioru-danych"><span class="header-section-number">1.1</span> Analiza zbioru danych</h2>
+<p>Zbiór danych zawiera 10k pozycji i 16 kolumn zmiennych. Kolumny to kolejno:</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "V1"                "age"               "income"           
+ [4] "children"          "credit_history"    "overdue_payments" 
+ [7] "active_loans"      "years_in_job"      "employment_type"  
+[10] "owns_property"     "assets_value"      "other_loans"      
+[13] "education"         "city"              "marital_status"   
+[16] "support_indicator" "credit_risk"      </code></pre>
+</div>
+</div>
+<p>Przykładowe wartości kolumn z danymi kategorycznymi:</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "brak opóźnień"             ""                         
+ [3] "opóźnienia"                "3"                        
+ [5] "2"                         "4"                        
+ [7] "dobra historia"            "brak historii"            
+ [9] ""                          "samozatrudnienie"         
+[11] "stała"                     "brak"                     
+[13] "określona"                 ""                         
+[15] "tak"                       "nie"                      
+[17] "wyższe"                    "średnie"                  
+[19] "podstawowe"                "małe"                     
+[21] "średnie"                   "duże"                     
+[23] "żonaty/zamężna"            "kawaler/panna"            
+[25] "rozwiedziony/rozwiedziona"</code></pre>
+</div>
+</div>
+</section>
+<section id="czyszczenie-danych" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="czyszczenie-danych"><span class="header-section-number">1.2</span> Czyszczenie danych</h2>
+<p>Aby przygotować zbiór danych do analizy:</p>
+<ul>
+<li><p>usunięto kolumnę indeksów</p></li>
+<li><p>usunięto napis “złoty” z kolum <em>income</em> i <em>assets</em> <em>value</em>, zamieniono je na numeryczne</p></li>
+<li><p>w kolumnie <em>children</em> napis “brak” zmieniono na wartość 0, a całą kolumnę - na wartości liczbowe</p></li>
+<li><p>puste miejsca w kolumnie <em>credit</em> <em>history</em> zamieniono na “brak”, a napisy “dobra historia” skrócono do “dobra”</p></li>
+<li><p>w kolumnie <em>owns</em> <em>property</em> puste rekordy zamieniono “nie” (czyli założono brak posiadanych nieruchmości)</p></li>
+<li><p>puste rekordy w <em>assets</em> <em>value</em> ustawiono na 0 (skoro brak danych, to lepiej założyć, że dany klient aktywów nie posiada)</p></li>
+<li><p>w kolumnie <em>marital</em> <em>status</em> skrócono napisy do M - married, D - divorced, S - single dla ułatwienia pracy z tabelą</p></li>
+<li><p>wszystkie kolumny zawierające dane kategoryczne sfaktoryzowano</p></li>
+</ul>
+<p>Opracowane dane prezentują sie teraz tak:</p>
+<div class="cell">
+<div class="cell-output-display">
+
+<div class="datatables html-widget html-fill-item" id="htmlwidget-7060d7566da31d926343" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-7060d7566da31d926343">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6"],[44,38,46,55,37,37],[15689,18906,16338,23276,40000,0],[0,4,2,3,1,0],["dobra","brak","brak","dobra","brak","dobra"],["0","0","0","1","0","1"],[2,0,2,2,1,1],[9,1,4,10,9,11],["samozatrudnienie","stała","brak","stała","określona","określona"],["nie","tak","tak","tak","nie","tak"],[0,62965,124967,52147,33957,85621],[1,0,0,1,1,0],["wyższe","średnie","podstawowe","średnie","wyższe","wyższe"],["małe","średnie","duże","małe","małe","duże"],["M","S","M","S","S","S"],[0.1781307183164518,0.3704799526452771,0.7123342931374561,0.6650496640103427,0.607150978647289,0.1659691144871057],[0,0,0,0,0,0]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>age<\/th>\n      <th>income<\/th>\n      <th>children<\/th>\n      <th>credit_history<\/th>\n      <th>overdue_payments<\/th>\n      <th>active_loans<\/th>\n      <th>years_in_job<\/th>\n      <th>employment_type<\/th>\n      <th>owns_property<\/th>\n      <th>assets_value<\/th>\n      <th>other_loans<\/th>\n      <th>education<\/th>\n      <th>city<\/th>\n      <th>marital_status<\/th>\n      <th>support_indicator<\/th>\n      <th>credit_risk<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2,3,6,7,10,11,15,16]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"age","targets":1},{"name":"income","targets":2},{"name":"children","targets":3},{"name":"credit_history","targets":4},{"name":"overdue_payments","targets":5},{"name":"active_loans","targets":6},{"name":"years_in_job","targets":7},{"name":"employment_type","targets":8},{"name":"owns_property","targets":9},{"name":"assets_value","targets":10},{"name":"other_loans","targets":11},{"name":"education","targets":12},{"name":"city","targets":13},{"name":"marital_status","targets":14},{"name":"support_indicator","targets":15},{"name":"credit_risk","targets":16}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</section>
+<section id="podstawowe-statystyki" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="podstawowe-statystyki"><span class="header-section-number">1.3</span> Podstawowe statystyki</h2>
+<p>“Typowy” klient z bazy prezentuje się nastepująco:</p>
+<div class="cell" data-messages="false" data-warnings="false">
+<div class="cell-output-display">
+
+<div class="datatables html-widget html-fill-item" id="htmlwidget-2213890e7b743d88dcbd" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-2213890e7b743d88dcbd">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8"],["Age","Liczba dzieci","Przychód","Wielkość zamieszkanego miasta","Wykształcenie","Wartośc aktywów","Staż w pracy","Stan cywilny"],["40","1","18879","małe","średnie","64280","10","M"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>dane_nazwy<\/th>\n      <th>dane_wartosci<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"dane_nazwy","targets":1},{"name":"dane_wartosci","targets":2}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<p>Czyli jest to osoba w średnim wieku, z jednym dzieckiem, średnim wykształceniem, rocznym dochodem średnio wynoszącym 18 879 zł, mieszkająca w małym mieście.</p>
+</section>
+</section>
+<section id="wizualizacje" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Wizualizacje</h1>
+<section id="ridge-plot" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="ridge-plot"><span class="header-section-number">2.1</span> Ridge plot</h2>
+<p>Wykres przedstawia rozkład rocznego przychodu w zależności od typu zatrudnienia danej osoby.</p>
+<div class="cell" data-messages="false" data-warnings="false">
+<div class="cell-output cell-output-stderr">
+<pre><code>Picking joint bandwidth of 2520</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="!W2_Atlas_projekt_DZ_LG-1_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="boxplot" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="boxplot"><span class="header-section-number">2.2</span> Boxplot</h2>
+<p>Wykres przedstawia ponownie rozkład przychodów, ale tym razem - w zależności od wykształcenia.</p>
+<div class="cell" data-messages="false" data-warnings="false">
+<div class="cell-output-display">
+<p><img src="!W2_Atlas_projekt_DZ_LG-1_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="wnioski" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="wnioski"><span class="header-section-number">2.3</span> Wnioski</h2>
+<p>Widoczny na wykresach, bardzo zbliżony (a właściwie niemal identyczny) w różnych grupach rozkład zmiennej <em>income</em> sugeruje, że dane - jako zbiór danych synetycznych - są dosyć zbliżone do siebie, bardziej niż w realnym świecie; nie widać tutaj nieomal żadnych różnic pomiędzy osobami o różnym wykształceniu czy nawet w ogóle pracującymi a bezrobotnymi.</p>
+</section>
+</section>
+<section id="modele" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Modele</h1>
+<p>Dane opracowane w Rstudio wyeksportowano jako plik csv, następnie zbudowano na nich przykładowy model klasyfikacyjny w JupyterLab oraz regresyjny, korzystając z pythona wewnątrz środowiska Rstudio.</p>
+<section id="regresja-liniowa" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="regresja-liniowa"><span class="header-section-number">3.1</span> Regresja liniowa</h2>
+<section id="dlaczego-nie-jest-odpowiednim-wyborem" class="level3" data-number="3.1.1">
+<h3 data-number="3.1.1" class="anchored" data-anchor-id="dlaczego-nie-jest-odpowiednim-wyborem"><span class="header-section-number">3.1.1</span> Dlaczego nie jest odpowiednim wyborem?</h3>
+<p>Regresja liniowa przewiduje wartości ciągłe, a wartość wynikowa naszego zbioru przyjmuje wartości binarne-0/1. W przypadku zmiennej wynikowej klasyfikacyjnej, model regresji liniowej może zwrócić wartości spoza zakresu [0, 1], np. -0.5 lub 1.5, co nie ma sensu w kontekście klasyfikacji, jak widać poniżej.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="regresjaliniowa.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+<p>Dla problemu klasyfikacyjnego można zastosować model regresji logistycznej, jednak nie radzi on sobie dobrze ze złożonymi relacjami. W związku z tym zastosowane zostały modele takie jak XGBoost, Drzewo Decyzyjne, Las Losowy, naiwny klasyfikator Bayesa i SVM.</p>
+</section>
+</section>
+<section id="klasyfikacja-binarna" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="klasyfikacja-binarna"><span class="header-section-number">3.2</span> Klasyfikacja binarna</h2>
+<p>W tej części zbudowano model nadzorowany - klasyfikacyjny, a konkretniej klasyfikacyjny binarny. Zmienna wynikowa to credit_risk z opracowywanego zbioru danych - gdzie wartość 0 oznacza niskie ryzyko, a 1 - wysokie. Tę zmienną przewidywano za pomocą wszystkich innych zmiennych ze zbioru danych. Zbiór testowy liczy 2 000 pozycji.<br>
+<br>
+Ze względu na dużą ilość kolumn z danymi kategorycznymi, przed przystąpieniem do budowy modeli zastosowano one-hot encoding w celu przedstawienia ich jako zmienne binarne.</p>
+<p>Tak prezentują się dane po kodowaniu one-hot:</p>
+<div class="cell" data-messages="false" data-warnings="false">
+<div class="cell-output-display">
+
+<div class="datatables html-widget html-fill-item" id="htmlwidget-4496855aaaa79b43aded" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-4496855aaaa79b43aded">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6"],[1,2,3,4,5,6],[0,1,2,3,4,5],[44,38,46,55,37,37],[15689,18906,16338,23276,40000,0],[0,4,2,3,1,0],[2,0,2,2,1,1],[9,1,4,10,9,11],[0,62965,124967,52147,33957,85621],[1,0,0,1,1,0],[0.178130718316452,0.370479952645277,0.712334293137456,0.665049664010343,0.607150978647289,0.165969114487106],[0,0,0,0,0,0],["True","True","True","False","True","False"],["False","False","False","True","False","True"],["False","False","False","False","False","False"],["False","False","False","False","False","False"],["False","False","False","False","False","False"],["False","True","True","False","True","False"],["True","False","False","True","False","True"],["False","False","True","False","False","False"],["False","False","False","False","True","True"],["True","False","False","False","False","False"],["False","True","False","True","False","False"],["True","False","False","False","True","False"],["False","True","True","True","False","True"],["False","False","True","False","False","False"],["True","False","False","False","True","True"],["False","True","False","True","False","False"],["False","False","True","False","False","True"],["True","False","False","True","True","False"],["False","True","False","False","False","False"],["False","False","False","False","False","False"],["True","False","True","False","False","False"],["False","True","False","True","True","True"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Unnamed..0<\/th>\n      <th>V1<\/th>\n      <th>age<\/th>\n      <th>income<\/th>\n      <th>children<\/th>\n      <th>active_loans<\/th>\n      <th>years_in_job<\/th>\n      <th>assets_value<\/th>\n      <th>other_loans<\/th>\n      <th>support_indicator<\/th>\n      <th>credit_risk<\/th>\n      <th>overdue_payments_0<\/th>\n      <th>overdue_payments_1<\/th>\n      <th>overdue_payments_2<\/th>\n      <th>overdue_payments_3<\/th>\n      <th>overdue_payments_4<\/th>\n      <th>credit_history_brak<\/th>\n      <th>credit_history_dobra<\/th>\n      <th>employment_type_brak<\/th>\n      <th>employment_type_określona<\/th>\n      <th>employment_type_samozatrudnienie<\/th>\n      <th>employment_type_stała<\/th>\n      <th>owns_property_nie<\/th>\n      <th>owns_property_tak<\/th>\n      <th>education_podstawowe<\/th>\n      <th>education_wyższe<\/th>\n      <th>education_średnie<\/th>\n      <th>city_duże<\/th>\n      <th>city_małe<\/th>\n      <th>city_średnie<\/th>\n      <th>marital_status_D<\/th>\n      <th>marital_status_M<\/th>\n      <th>marital_status_S<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5,6,7,8,9,10,11]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"Unnamed..0","targets":1},{"name":"V1","targets":2},{"name":"age","targets":3},{"name":"income","targets":4},{"name":"children","targets":5},{"name":"active_loans","targets":6},{"name":"years_in_job","targets":7},{"name":"assets_value","targets":8},{"name":"other_loans","targets":9},{"name":"support_indicator","targets":10},{"name":"credit_risk","targets":11},{"name":"overdue_payments_0","targets":12},{"name":"overdue_payments_1","targets":13},{"name":"overdue_payments_2","targets":14},{"name":"overdue_payments_3","targets":15},{"name":"overdue_payments_4","targets":16},{"name":"credit_history_brak","targets":17},{"name":"credit_history_dobra","targets":18},{"name":"employment_type_brak","targets":19},{"name":"employment_type_określona","targets":20},{"name":"employment_type_samozatrudnienie","targets":21},{"name":"employment_type_stała","targets":22},{"name":"owns_property_nie","targets":23},{"name":"owns_property_tak","targets":24},{"name":"education_podstawowe","targets":25},{"name":"education_wyższe","targets":26},{"name":"education_średnie","targets":27},{"name":"city_duże","targets":28},{"name":"city_małe","targets":29},{"name":"city_średnie","targets":30},{"name":"marital_status_D","targets":31},{"name":"marital_status_M","targets":32},{"name":"marital_status_S","targets":33}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<p>Po tym przekształceniu podzielone zbiór danych na zbiór uczący (80% danych) i testowy (20%).</p>
+<p>Zbudowano następujące modele:</p>
+<ul>
+<li><p>DT - drzewo decyzyjne</p></li>
+<li><p>RF - las losowy drzew decyzyjnych</p></li>
+<li><p>SVM - maszynę wektorów nośnych</p></li>
+<li><p>NB - naiwny klasyfikator Bayesa</p></li>
+<li><p>XGBC - algorytm wzmacniania gradientowego.</p></li>
+</ul>
+<p>W poniższej tabeli przedstawione są miary dopasowań poszczególnych modeli, a dokładniej:</p>
+<ul>
+<li><p>Accuracy (dokładność) - odsetek klientów poprawnie zaklasyfkowanych jako low/high risk</p></li>
+<li><p>Recall (czułość) - stosunek liczby klientów zaklasyfikowanych jako ryzykownych do tych, którzy rzeczywiście są ryzykowni</p></li>
+<li><p>Specificity (swoistość) - stosunek poprawnie zaklasyfikowanych klientów niskiego ryzyka do tych, którzy rzeczywiście są low risk</p></li>
+</ul>
+<p>Pozytywne przypadki - klienci ryzykowni (bo to ich szukano)</p>
+<p>Negatywne przypadki - klienci niskiego ryzyka (bo nimi nie trzeba się aż tak przejmować)</p>
+<div class="cell" data-messages="false" data-warnings="false">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 4
+  Model Accuracy Recall Specificity
+  &lt;chr&gt;    &lt;dbl&gt;  &lt;dbl&gt;       &lt;dbl&gt;
+1 DT        0.99   0.88        0.99
+2 RF        1      0.84        1   
+3 SVM       0.97   0           1   
+4 NB        0.97   0           1   
+5 XGBC      0.99   0.83        1   </code></pre>
+</div>
+</div>
+<section id="interpretacja-dopasowań" class="level3" data-number="3.2.1">
+<h3 data-number="3.2.1" class="anchored" data-anchor-id="interpretacja-dopasowań"><span class="header-section-number">3.2.1</span> Interpretacja dopasowań</h3>
+<p>Największe znaczenie w kontekście udzielania kredytu ma tutaj czułość - bo to od niej zależy, czy prawidłowo wykryjemy “niebezpiecznych” klientów i odmówimy im udzielenia pożyczki. Swoistość co prawda ma bardzo wysoką wartość, ale w porównaniu z czułością, nie ma tak wielkiego znaczenia - w przypadku błędnego zaklasyfikowania klienta o niskim ryzyku jako ryzykownego, po prostu nie zostanie mu udzielona pożyczka i bank nie narazi się na potencjalne straty.</p>
+<p>Zatem odrzucone powinny zostać modele zbudowane za pomocą maszyny wektorów nośnych i naiwnego klasyfikatora Bayesa.</p>
+<p>Macierze błędów prawidłowych modeli prezentują sie następująco:</p>
+<p><img src="conf_matrix/DT_confusion_matrix.png" class="img-fluid"></p>
+<p><img src="conf_matrix/RF_confusion_matrix.png" class="img-fluid"></p>
+<p><img src=".png" class="img-fluid"></p>
+<p><img src="conf_matrix/XGBC_confusion_matrix.png" class="img-fluid"></p>
+<section id="section" class="level4" data-number="3.2.1.1">
+<h4 data-number="3.2.1.1" class="anchored" data-anchor-id="section"><span class="header-section-number">3.2.1.1</span> </h4>
+</section>
+<section id="interpretacja-macierzy-błędów" class="level4" data-number="3.2.1.2">
+<h4 data-number="3.2.1.2" class="anchored" data-anchor-id="interpretacja-macierzy-błędów"><span class="header-section-number">3.2.1.2</span> Interpretacja macierzy błędów</h4>
+<p>Drzewo decyzyjne wydaje się tutaj być najbezpieczniejszą dla banku opcją - miało tylko 7 przypadków osób o wysokim ryzyku błędnie zaklasyfikowanych jako osoby niskiego ryzyka, w porównaniu z 9 i 10 w lesie i XGCBoost. Różnice te są jednak niewielkie - wynika to najprawdopodobniej z faktu, że w całym zbiorze danych jest dośc mało klientów wysokiego ryzyka (tylko 58 z 2000).</p>
+</section>
+</section>
+</section>
+</section>
+<section id="podsumowanie" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Podsumowanie</h1>
+<p>Na podstawie przeprowadzonej analizy danych ze zbioru dotyczącego oceny ryzyka kredytowego, wykonano szereg kroków w celu przygotowania danych do analizy i modelowania.</p>
+<p>W analizowanym zbiorze danych przedstawiono profil typowego klienta jako osoby w średnim wieku, z 1 dzieckiem i umiarkowanym dochodem. Przeprowadzona analiza wykazała, że dane są dość jednorodne, co odzwierciedlono w wizualizacjach przedstawiających rozkład dochodów w zależności od różnych cech demograficznych.</p>
+<p>Po przygotowaniu danych nastąpiła budowa modeli klasyfikacyjnych, w tym drzewa decyzyjnego, lasu losowego, maszyn wektorów nośnych, naiwnego klasyfikatora Bayesa oraz algorytmu XGBoost. Modele te zostały ocenione na podstawie trzech miar: dokładności, czułości oraz swoistości. Największe znaczenie w tym przypadku miała czułość, ponieważ od niej zależało prawidłowe zidentyfikowanie ryzykownych klientów, których należałoby odrzucić przy udzielaniu pożyczek.</p>
+<p>Podsumowując, proces analizy, czyszczenia i modelowania danych umożliwił uzyskanie wartościowych wniosków dotyczących potencjalnych ryzyk związanych z udzielaniem kredytów. Pomimo syntetycznego charakteru zbioru danych, przeprowadzona analiza dostarczyła użytecznych informacji o tym, jak poszczególne cechy klientów wpływają na ich ryzyko kredytowe, a także jak różne modele klasyfikacyjne mogą być zastosowane w tym kontekście.</p>
+<section id="bibliografia" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="bibliografia"><span class="header-section-number">4.1</span> Bibliografia</h2>
+<ul>
+<li><p><a href="https://github.com/mateuszwalo/BootCamp_ATLAS_materials">materiały z Bootcampu</a></p></li>
+<li><p><a href="URL">- https:</a><a href="https://books.google.pl/books?id=Ia5KDAAAQBAJ&amp;lpg=PP1&amp;ots=kp-1UWscXT&amp;dq=predictive%20model%20python&amp;lr&amp;hl=pl&amp;pg=PP1#v=onepage&amp;q=predictive%20model%20python&amp;f=false" class="uri">//books.google.pl/books?id=Ia5KDAAAQBAJ&amp;lpg=PP1&amp;ots=kp-1UWscXT&amp;dq=predictive%20model%20python&amp;lr&amp;hl=pl&amp;pg=PP1#v=onepage&amp;q=predictive%20model%20python&amp;f=false</a></p></li>
+<li><p><a href="https://dax44-datamining.netlify.app/" class="uri">https://dax44-datamining.netlify.app/</a></p></li>
+<li><p><a href="https://majerek.quarto.pub/metody-walidacji-modeli-statystycznych/" class="uri">https://majerek.quarto.pub/metody-walidacji-modeli-statystycznych/</a></p></li>
+<li><p><a href="https://r-graph-gallery.com/" class="uri">https://r-graph-gallery.com/</a></p></li>
+<li><p><a href="https://www.w3schools.com/python/" class="uri">https://www.w3schools.com/python/</a></p></li>
+</ul>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
