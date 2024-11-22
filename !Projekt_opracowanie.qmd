@@ -1,0 +1,337 @@
+---
+title: "Projekt konkursowy z bootcampu"
+subtitle: "Symulacja analizy ryzyka kredytowego"
+author: Dominika Zydorczyk, Lidia Gozdecka
+format: 
+  html:
+    toc: true
+    toc - title: "Spis treści"
+    toc-depth: 2
+    toc - location: left
+    number-sections: true 
+editor: visual
+---
+
+# Zbiór danych
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+#| echo: false
+library(tidyverse)
+library(rio)
+library(DT)
+library(ggplot2)
+library(dplyr)
+library(stringr)
+library(plotly)
+library(ggridges)
+Data_atlas <- import("data_atlas.csv")
+datatable_head_atlas <- datatable(head(Data_atlas))
+
+```
+
+Analizowany zbiór danych jest zbiorem synetycznych danych symulujących ocenę ryzyka kredytowego. Tak się prezentują:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+datatable_head_atlas
+```
+
+## Analiza zbioru danych
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+k1 <- unique(Data_atlas$overdue_payments) #pomyslec jak to lepiej zapisac bo są wyniki:"brak opóźnień" "" "opóźnienia" "3" "2" "4" 
+k2 <- unique(Data_atlas$credit_history) #dobra/brak, nie ma zlej historii
+k3 <- unique(Data_atlas$employment_type)#4 typy "samozatrudnienie" "stała" "brak" "określona" 
+k4 <- unique(Data_atlas$owns_property) #tak/nie
+k5 <- unique(Data_atlas$education) #3 kategorie "wyższe" "średnie" "podstawowe"
+k6 <- unique(Data_atlas$city) #3 kategorie "małe" "średnie" "duże" 
+k7 <- unique(Data_atlas$marital_status) #3 kategorie, mozna jakos skrocic ewentualnie
+
+zawartosc_kolumn <- c(k1,k2,k3,k4,k5,k6,k7)
+
+#print(zawartosc_kolumn)
+```
+
+Zbiór danych zawiera 10k pozycji i 16 kolumn zmiennych. Kolumny to kolejno:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+print(colnames(Data_atlas))
+```
+
+Przykładowe wartości kolumn z danymi kategorycznymi:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+print(zawartosc_kolumn)
+```
+
+## Czyszczenie danych
+
+Aby przygotować zbiór danych do analizy:
+
+-   usunięto kolumnę indeksów
+
+-   usunięto napis "złoty" z kolum *income* i *assets* *value*, zamieniono je na numeryczne
+
+-   w kolumnie *children* napis "brak" zmieniono na wartość 0, a całą kolumnę - na wartości liczbowe
+
+-   puste miejsca w kolumnie *credit* *history* zamieniono na "brak", a napisy "dobra historia" skrócono do "dobra"
+
+-   w kolumnie *owns* *property* puste rekordy zamieniono "nie" (czyli założono brak posiadanych nieruchmości)
+
+-   puste rekordy w *assets* *value* ustawiono na 0 (skoro brak danych, to lepiej założyć, że dany klient aktywów nie posiada)
+
+-   w kolumnie *marital* *status* skrócono napisy do M - married, D - divorced, S - single dla ułatwienia pracy z tabelą
+
+-   wszystkie kolumny zawierające dane kategoryczne sfaktoryzowano
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+Data_atlas <- Data_atlas[ ,-1] #usuwanie pierwszej kolumny z indeksami
+
+Data_atlas$income <- gsub("[^0-9]", "", Data_atlas$income)
+Data_atlas$income <- as.numeric(Data_atlas$income)
+
+Data_atlas$children <- ifelse(Data_atlas$children == "brak", 0, Data_atlas$children)#brak dzieci = 0 dzieci
+Data_atlas$children <- gsub("[^0-9]", "", Data_atlas$children)
+Data_atlas$children <- as.numeric(Data_atlas$children)
+
+Data_atlas$assets_value <- gsub("[^0-9]", "", Data_atlas$assets_value)
+Data_atlas$assets_value <- as.numeric(Data_atlas$assets_value)
+
+
+
+Data_atlas[c("credit_history", "overdue_payments", "employment_type", "owns_property", "education", "city", "marital_status")] <- lapply(Data_atlas[c("credit_history", "overdue_payments", "employment_type", "owns_property", "education", "city", "marital_status")], as.factor)
+
+
+
+
+Data_atlas$credit_history <- gsub("^\\s*$", "brak", Data_atlas$credit_history)
+Data_atlas$credit_history <- gsub("brak historii", "brak", Data_atlas$credit_history)
+Data_atlas$credit_history <- gsub("dobra historia", "dobra", Data_atlas$credit_history)
+
+#M,S,D  - married, single, divorced
+Data_atlas$marital_status <- gsub("żonaty/zamężna", "M", Data_atlas$marital_status)
+Data_atlas$marital_status <- gsub("kawaler/panna", "S", Data_atlas$marital_status)
+Data_atlas$marital_status <- gsub("rozwiedziony/rozwiedziona", "D", Data_atlas$marital_status)
+
+
+# puste assets value ustawiam na 0, pust eincome też
+Data_atlas <- Data_atlas %>%
+  mutate(assets_value = replace(assets_value, is.na(assets_value), 0))
+
+#overduepayment tez, a potem brak = 0  i są  = 1
+#Data_atlas$overdue_payments[is.na(Data_atlas$overdue_payments)] <- 0
+Data_atlas$overdue_payments <- gsub("^\\s*$", "brak opóźnień", Data_atlas$overdue_payments)
+Data_atlas$overdue_payments <- gsub("brak opóźnień", "0", Data_atlas$overdue_payments)
+Data_atlas$overdue_payments <- gsub("opóźnienia", "1", Data_atlas$overdue_payments)
+Data_atlas$overdue_payments <- as.factor(Data_atlas$overdue_payments)
+
+#puste ustawiam jako brak nieruchomosci
+Data_atlas$owns_property <- gsub("^\\s*$", "nie", Data_atlas$owns_property)
+
+#pusty income daje na 0
+Data_atlas$income[is.na(Data_atlas$income)] <- 0
+
+# puste assets value ustawiam na 0
+Data_atlas <- Data_atlas %>%
+  mutate(assets_value = replace(assets_value, is.na(assets_value), 0))
+
+View(Data_atlas)
+```
+
+Opracowane dane prezentują sie teraz tak:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(DT)
+#datatable_czyste <- datatable(head(Data_atlas))
+#print(datatable_czyste)
+datatable(head(Data_atlas))
+```
+
+## Podstawowe statystyki
+
+"Typowy" klient z bazy prezentuje się nastepująco:
+
+```{r, echo=FALSE, messages=FALSE, warnings = FALSE}
+counts_miasto <- table(Data_atlas$city)
+miasto <- names(counts_miasto)[which.max(counts_miasto)]
+
+counts_edukacja <- table(Data_atlas$education)
+edukacja <- names(counts_edukacja)[which.max(counts_edukacja)]
+
+counts_stan <- table(Data_atlas$marital_status)
+stan_cyw <- names(counts_stan)[which.max(counts_stan)]
+
+
+
+dane_nazwy <- c("Age", "Liczba dzieci", "Przychód", "Wielkość zamieszkanego miasta", "Wykształcenie", "Wartośc aktywów", "Staż w pracy", "Stan cywilny")
+dane_wartosci <- c(
+  round(mean(Data_atlas$age),0),
+  round(mean(Data_atlas$children),0),
+  round(mean(Data_atlas$income),0),
+  miasto,
+  edukacja,
+  round(mean(Data_atlas$assets_value),0),
+  round(mean(Data_atlas$years_in_job),0),
+  stan_cyw
+  )
+
+typowy <- data.frame(dane_nazwy, dane_wartosci) 
+
+datatable(typowy)
+```
+
+Czyli jest to osoba w średnim wieku, z jednym dzieckiem, średnim wykształceniem, rocznym dochodem średnio wynoszącym 18 879 zł, mieszkająca w małym mieście.
+
+# Wizualizacje
+
+## Ridge plot
+
+Wykres przedstawia rozkład rocznego przychodu w zależności od typu zatrudnienia danej osoby.
+
+```{r, echo=FALSE, messages=FALSE, warnings=FALSE}
+
+
+wykres_ridge <- ggplot(Data_atlas, aes(y=employment_type, x = income, fill = employment_type)) +
+  geom_density_ridges(alpha=0.4, scale = 4) +
+  theme_ridges() + 
+  theme(legend.position = "none")+
+  labs(
+    title = "Rozkład przychodów w zależności od typu zatrudnienia",
+    x="przychód roczny w zł",
+    y="zatrudnienie"
+  )  + 
+  theme(plot.title = element_text(hjust = 0.5)) + 
+  theme(legend_position="none") +
+  theme_minimal()
+
+  
+wykres_ridge
+```
+
+## Boxplot
+
+Wykres przedstawia ponownie rozkład przychodów, ale tym razem - w zależności od wykształcenia.
+
+```{r, echo=FALSE, messages=FALSE, warnings=FALSE}
+edu_plot <- ggplot(Data_atlas, aes(y = income, fill = education)) + geom_boxplot() +
+  labs(x= "wykształcenie", y="przychód w zł") + 
+  ggtitle("Rozkład przychodów w zależności od wykształcenia") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme_minimal()+
+  scale_fill_brewer(palette="Set3")
+
+print(edu_plot)
+```
+
+## Wnioski
+
+Widoczny na wykresach, bardzo zbliżony (a właściwie niemal identyczny) w różnych grupach rozkład zmiennej *income* sugeruje, że dane - jako zbiór danych synetycznych - są dosyć zbliżone do siebie, bardziej niż w realnym świecie; nie widać tutaj nieomal żadnych różnic pomiędzy osobami o różnym wykształceniu czy nawet w ogóle pracującymi a bezrobotnymi.
+
+# Modele
+
+Dane opracowane w Rstudio wyeksportowano jako plik csv, następnie zbudowano na nich przykładowy model klasyfikacyjny w JupyterLab oraz regresyjny, korzystając z pythona wewnątrz środowiska Rstudio.
+
+## Regresja liniowa
+
+### Dlaczego nie jest odpowiednim wyborem?
+
+Regresja liniowa przewiduje wartości ciągłe, a wartość wynikowa naszego zbioru przyjmuje wartości binarne-0/1. W przypadku zmiennej wynikowej klasyfikacyjnej, model regresji liniowej może zwrócić wartości spoza zakresu \[0, 1\], np. -0.5 lub 1.5, co nie ma sensu w kontekście klasyfikacji, jak widać poniżej.
+
+![](regresjaliniowa.png){fig-align="center"}
+
+Dla problemu klasyfikacyjnego można zastosować model regresji logistycznej, jednak nie radzi on sobie dobrze ze złożonymi relacjami. W związku z tym zastosowane zostały modele takie jak XGBoost, Drzewo Decyzyjne, Las Losowy, naiwny klasyfikator Bayesa i SVM.
+
+## Klasyfikacja binarna
+
+W tej części zbudowano model nadzorowany - klasyfikacyjny, a konkretniej klasyfikacyjny binarny. Zmienna wynikowa to credit_risk z opracowywanego zbioru danych - gdzie wartość 0 oznacza niskie ryzyko, a 1 - wysokie. Tę zmienną przewidywano za pomocą wszystkich innych zmiennych ze zbioru danych. Zbiór testowy liczy 2 000 pozycji.\
+\
+Ze względu na dużą ilość kolumn z danymi kategorycznymi, przed przystąpieniem do budowy modeli zastosowano one-hot encoding w celu przedstawienia ich jako zmienne binarne.
+
+Tak prezentują się dane po kodowaniu one-hot:
+
+```{r, echo=FALSE, messages=FALSE, warnings=FALSE}
+one_hot_csv <- read.csv('one_hot_data_atlas.csv')
+head_onehot <- head(one_hot_csv)
+
+datatable(head_onehot)
+```
+
+Po tym przekształceniu podzielone zbiór danych na zbiór uczący (80% danych) i testowy (20%).
+
+Zbudowano następujące modele:
+
+-   DT - drzewo decyzyjne
+
+-   RF - las losowy drzew decyzyjnych
+
+-   SVM - maszynę wektorów nośnych
+
+-   NB - naiwny klasyfikator Bayesa
+
+-   XGBC - algorytm wzmacniania gradientowego.
+
+W poniższej tabeli przedstawione są miary dopasowań poszczególnych modeli, a dokładniej:
+
+-   Accuracy (dokładność) - odsetek klientów poprawnie zaklasyfkowanych jako low/high risk
+
+-   Recall (czułość) - stosunek liczby klientów zaklasyfikowanych jako ryzykownych do tych, którzy rzeczywiście są ryzykowni
+
+-   Specificity (swoistość) - stosunek poprawnie zaklasyfikowanych klientów niskiego ryzyka do tych, którzy rzeczywiście są low risk
+
+Pozytywne przypadki - klienci ryzykowni (bo to ich szukano)
+
+Negatywne przypadki - klienci niskiego ryzyka (bo nimi nie trzeba się aż tak przejmować)
+
+```{r, echo=FALSE, messages=FALSE, warnings=FALSE}
+#| echo: false
+tab_python <- read.csv('binary_clasification_results.csv')
+tibble_python <- tibble(tab_python)
+tibble_python
+```
+
+### Interpretacja dopasowań
+
+Największe znaczenie w kontekście udzielania kredytu ma tutaj czułość - bo to od niej zależy, czy prawidłowo wykryjemy "niebezpiecznych" klientów i odmówimy im udzielenia pożyczki. Swoistość co prawda ma bardzo wysoką wartość, ale w porównaniu z czułością, nie ma tak wielkiego znaczenia - w przypadku błędnego zaklasyfikowania klienta o niskim ryzyku jako ryzykownego, po prostu nie zostanie mu udzielona pożyczka i bank nie narazi się na potencjalne straty.
+
+Zatem odrzucone powinny zostać modele zbudowane za pomocą maszyny wektorów nośnych i naiwnego klasyfikatora Bayesa.
+
+Macierze błędów prawidłowych modeli prezentują sie następująco:
+
+![](conf_matrix/DT_confusion_matrix.png)
+
+![](conf_matrix/RF_confusion_matrix.png)
+
+![]()
+
+![](conf_matrix/XGBC_confusion_matrix.png)
+
+#### 
+
+#### Interpretacja macierzy błędów
+
+Drzewo decyzyjne wydaje się tutaj być najbezpieczniejszą dla banku opcją - miało tylko 7 przypadków osób o wysokim ryzyku błędnie zaklasyfikowanych jako osoby niskiego ryzyka, w porównaniu z 9 i 10 w lesie i XGCBoost. Różnice te są jednak niewielkie - wynika to najprawdopodobniej z faktu, że w całym zbiorze danych jest dośc mało klientów wysokiego ryzyka (tylko 58 z 2000).
+
+# Podsumowanie
+
+Na podstawie przeprowadzonej analizy danych ze zbioru dotyczącego oceny ryzyka kredytowego, wykonano szereg kroków w celu przygotowania danych do analizy i modelowania.
+
+W analizowanym zbiorze danych przedstawiono profil typowego klienta jako osoby w średnim wieku, z 1 dzieckiem i umiarkowanym dochodem. Przeprowadzona analiza wykazała, że dane są dość jednorodne, co odzwierciedlono w wizualizacjach przedstawiających rozkład dochodów w zależności od różnych cech demograficznych.
+
+Po przygotowaniu danych nastąpiła budowa modeli klasyfikacyjnych, w tym drzewa decyzyjnego, lasu losowego, maszyn wektorów nośnych, naiwnego klasyfikatora Bayesa oraz algorytmu XGBoost. Modele te zostały ocenione na podstawie trzech miar: dokładności, czułości oraz swoistości. Największe znaczenie w tym przypadku miała czułość, ponieważ od niej zależało prawidłowe zidentyfikowanie ryzykownych klientów, których należałoby odrzucić przy udzielaniu pożyczek.
+
+Podsumowując, proces analizy, czyszczenia i modelowania danych umożliwił uzyskanie wartościowych wniosków dotyczących potencjalnych ryzyk związanych z udzielaniem kredytów. Pomimo syntetycznego charakteru zbioru danych, przeprowadzona analiza dostarczyła użytecznych informacji o tym, jak poszczególne cechy klientów wpływają na ich ryzyko kredytowe, a także jak różne modele klasyfikacyjne mogą być zastosowane w tym kontekście.
+
+## Bibliografia
+
+-   [materiały z Bootcampu](https://github.com/mateuszwalo/BootCamp_ATLAS_materials)
+
+-   [- https:](URL)[//books.google.pl/books?id=Ia5KDAAAQBAJ&lpg=PP1&ots=kp-1UWscXT&dq=predictive%20model%20python&lr&hl=pl&pg=PP1#v=onepage&q=predictive%20model%20python&f=false](https://books.google.pl/books?id=Ia5KDAAAQBAJ&lpg=PP1&ots=kp-1UWscXT&dq=predictive%20model%20python&lr&hl=pl&pg=PP1#v=onepage&q=predictive%20model%20python&f=false){.uri}
+
+-   <https://dax44-datamining.netlify.app/>
+
+-   <https://majerek.quarto.pub/metody-walidacji-modeli-statystycznych/>
+
+-   <https://r-graph-gallery.com/>
+
+-   <https://www.w3schools.com/python/>
